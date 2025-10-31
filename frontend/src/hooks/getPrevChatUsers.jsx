@@ -1,27 +1,22 @@
-//getPrevChatUsers.jsx
-import axios from 'axios'
-import React, { useEffect } from 'react'
-import { serverUrl } from '../App'
-import { useDispatch, useSelector } from 'react-redux'
-import { setFollowing, setUserData } from '../redux/userSlice'
-import { setCurrentUserStory } from '../redux/storySlice'
-import { setPrevChatUsers } from '../redux/messageSlice'
+import axios from 'axios';
+import { serverUrl } from '../App';
+// 'setFollowing', 'setUserData', 'setCurrentUserStory' yahaan istemaal nahin ho rahe the, isliye hata diya.
+import { setPrevChatUsers } from '../redux/messageSlice';
 
-function getPrevChatUsers() {
-    const dispatch=useDispatch()
-    const {messages}=useSelector(state=>state.message)
-  useEffect(()=>{
-const fetchUser=async ()=>{
-    try {
-        const result=await axios.get(`${serverUrl}/api/message/prevChats`,{withCredentials:true})
-         dispatch(setPrevChatUsers(result.data))
-         console.log(result.data)
-    } catch (error) {
-        console.log(error)
-    }
-}
-fetchUser()
-  },[messages])
-}
+// --- YEH HAI SAHI TAREKA ---
+// React, useEffect, useDispatch, useSelector ko hata diya gaya hai.
+// Function ab 'dispatch' ko seedha argument mein leta hai.
+const getPrevChatUsers = async (dispatch) => {
+  try {
+    const result = await axios.get(`${serverUrl}/api/message/prevChats`, {
+      withCredentials: true,
+    });
+    // Yeh seedha App.jsx se pass huye 'dispatch' ko istemaal karta hai.
+    dispatch(setPrevChatUsers(result.data));
+    console.log(result.data);
+  } catch (error) {
+    console.log("Error fetching prev chat users:", error);
+  }
+};
 
-export default getPrevChatUsers
+export default getPrevChatUsers;
