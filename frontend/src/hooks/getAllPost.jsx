@@ -1,24 +1,21 @@
-import axios from 'axios'
-import React, { useEffect } from 'react'
-import { serverUrl } from '../App'
-import { useDispatch, useSelector } from 'react-redux'
-import { setUserData } from '../redux/userSlice'
-import { setPostData } from '../redux/postSlice'
+import axios from 'axios';
+import { serverUrl } from '../App';
+// 'setUserData' yahaan istemaal nahin ho raha tha, isliye hata diya.
+import { setPostData } from '../redux/postSlice';
 
-function getAllPost() {
-    const dispatch=useDispatch()
-    const {userData}=useSelector(state=>state.user)
-  useEffect(()=>{
-const fetchPost=async ()=>{
-    try {
-        const result=await axios.get(`${serverUrl}/api/post/getAll`,{withCredentials:true})
-         dispatch(setPostData(result.data))
-    } catch (error) {
-        console.log(error)
-    }
-}
-fetchPost()
-  },[dispatch,userData])
-}
+// --- YEH HAI SAHI TAREKA ---
+// React, useEffect, useDispatch, useSelector ko hata diya gaya hai.
+// Function ab 'dispatch' ko seedha argument mein leta hai.
+const getAllPost = async (dispatch) => {
+  try {
+    const result = await axios.get(`${serverUrl}/api/post/getAll`, {
+      withCredentials: true,
+    });
+    // Yeh seedha App.jsx se pass huye 'dispatch' ko istemaal karta hai.
+    dispatch(setPostData(result.data));
+  } catch (error) {
+    console.log("Error fetching posts:", error);
+  }
+};
 
-export default getAllPost
+export default getAllPost;
