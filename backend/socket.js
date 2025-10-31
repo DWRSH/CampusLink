@@ -1,4 +1,3 @@
-// backend/socket.js
 import http from "http";
 import express from "express";
 import { Server } from "socket.io";
@@ -6,10 +5,18 @@ import { Server } from "socket.io";
 const app = express();
 const server = http.createServer(app);
 
+// --- FIX: Socket.IO CORS Configuration ---
+// Bilkul server.js ki tarah, yahaan bhi apne allowed origins define karein
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://campuslink-frontend.onrender.com",
+];
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: allowedOrigins, // Hard-coded "localhost" ko allowed list se badal diya
     methods: ["GET", "POST"],
+    credentials: true, // Credentials ko allow karna zaroori hai
   },
 });
 
