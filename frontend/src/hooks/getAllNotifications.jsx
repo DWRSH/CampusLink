@@ -1,24 +1,21 @@
-import axios from 'axios'
-import React, { useEffect } from 'react'
-import { serverUrl } from '../App'
-import { useDispatch, useSelector } from 'react-redux'
-import { setNotificationData, setUserData } from '../redux/userSlice'
-import { setPostData } from '../redux/postSlice'
+import axios from 'axios';
+import { serverUrl } from '../App';
+// 'setUserData' aur 'setPostData' yahaan istemaal nahin ho rahe the, isliye hata diya.
+import { setNotificationData } from '../redux/userSlice';
 
-function getAllNotifications() {
-    const dispatch=useDispatch()
-    const {userData}=useSelector(state=>state.user)
-  useEffect(()=>{
-const fetchNotifications=async ()=>{
-    try {
-        const result=await axios.get(`${serverUrl}/api/user/getAllNotifications`,{withCredentials:true})
-         dispatch(setNotificationData(result.data))
-    } catch (error) {
-        console.log(error)
-    }
-}
-fetchNotifications()
-  },[dispatch,userData])
-}
+// --- YEH HAI SAHI TAREKA ---
+// React, useEffect, useDispatch, useSelector ko hata diya gaya hai.
+// Function ab 'dispatch' ko seedha argument mein leta hai.
+const getAllNotifications = async (dispatch) => {
+  try {
+    const result = await axios.get(`${serverUrl}/api/user/getAllNotifications`, {
+      withCredentials: true,
+    });
+    // Yeh seedha App.jsx se pass huye 'dispatch' ko istemaal karta hai.
+    dispatch(setNotificationData(result.data));
+  } catch (error) {
+    console.log("Error fetching notifications:", error);
+  }
+};
 
-export default getAllNotifications
+export default getAllNotifications;
