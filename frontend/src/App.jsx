@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-// Sahi paths (./pages/...)
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -9,7 +8,7 @@ import Home from "./pages/Home";
 
 import { useDispatch, useSelector } from "react-redux";
 
-// Sahi paths (./hooks/...)
+// Import your custom hooks
 import getCurrentUser from "./hooks/getCurrentUser";
 import getSuggestedUsers from "./hooks/getSuggestedUsers";
 import getAllPost from "./hooks/getAllPost";
@@ -19,7 +18,6 @@ import getFollowingList from "./hooks/getFollowingList";
 import getPrevChatUsers from "./hooks/getPrevChatUsers";
 import getAllNotifications from "./hooks/getAllNotifications";
 
-// Sahi paths (./pages/...)
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Upload from "./pages/Upload";
@@ -32,42 +30,46 @@ import Notifications from "./pages/Notifications";
 
 import Admin from "./pages/Admin";
 import AdminPosts from "./pages/AdminPostPanel";
-import AdminLoopPanel from "./pages/AdminLoopPanel"; // <-- Import new admin loop panel
+import AdminLoopPanel from "./pages/AdminLoopPanel";
 
 import { io } from "socket.io-client";
-// Sahi paths (./redux/...)
 import { setOnlineUsers } from "./redux/socketSlice";
 import { setNotificationData } from "./redux/userSlice";
 
-// --- YEH AAPKA PEHLA FIX HAI ---
-// URL ko dynamic banaya gaya hai
 export const serverUrl =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:8000"
-    : "https://campuslink-backend-rw6d.onrender.com"; // Aapka deployed backend URL
+  process.env.NODE_ENV === "production"
+    ? "https://campuslink-backend-rw6d.onrender.com"
+    : "http://localhost:8000";
 
 function App() {
-  // --- YEH AAPKA DOOSRA FIX HAI ---
-  // Hooks ko useEffect ke andar daala gaya hai taaki woh har render par na chalein
-
-  // getCurrentUser ko pehle call karein taaki user data load ho sake
-  getCurrentUser();
-
   const { userData, notificationData } = useSelector((state) => state.user);
+  
+  // --- FIX FOR REACT ERROR #321 ---
+  // Hum dispatch function ko yahaan, component ke andar, ek baar call karenge.
+  // Yeh React ke rules ke hisaab se sahi hai.
   const dispatch = useDispatch();
 
-  // Baaki saare data ko tab fetch karein jab userData aa jaaye
+  // Yeh hook app load hone par user data fetch karta hai.
+  // Hum ab `dispatch` ko as an argument pass kar rahe hain.
+  useEffect(() => {
+    getCurrentUser(dispatch); // <-- DISPATCH KO YAHAN PASS KAREIN
+  }, [dispatch]); // dispatch ko dependency array mein add karein
+
+  // Yeh hook baaki data tab fetch karta hai jab user data aa jaata hai.
+  // Hum `dispatch` ko sabhi hooks mein pass karenge.
   useEffect(() => {
     if (userData) {
-      getSuggestedUsers();
-      getAllPost();
-      getAllLoops();
-      getAllStories();
-      getFollowingList();
-      getPrevChatUsers();
-      getAllNotifications();
+      // Sabhi hooks mein dispatch pass karein
+      getSuggestedUsers(dispatch);
+      getAllPost(dispatch);
+      getAllLoops(dispatch);
+      getAllStories(dispatch);
+      getFollowingList(dispatch);
+      getPrevChatUsers(dispatch);
+      getAllNotifications(dispatch);
     }
-  }, [userData]); // Yeh sirf tab chalega jab userData badlega
+  }, [userData, dispatch]); // dispatch ko dependency array mein add karein
+  // --- END OF FIX ---
 
   useEffect(() => {
     if (userData) {
@@ -96,7 +98,9 @@ function App() {
   useEffect(() => {
     if (window.socketInstance) {
       window.socketInstance.on("newNotification", (noti) => {
-        dispatch(setNotificationData([...notificationData, noti]));
+        // Check karein ki notificationData ek array hai
+        const currentNotifications = Array.isArray(notificationData) ? notificationData : [];
+        dispatch(setNotificationData([...currentNotifications, noti]));
       });
     }
   }, [notificationData, dispatch]);
@@ -172,7 +176,7 @@ function App() {
       <Route
         path="/loops"
         element={userData ? <Loops /> : <Navigate to={"/signin"} />}
-      S/>
+      />
     </Routes>
   );
 }
