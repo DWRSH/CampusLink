@@ -6,7 +6,6 @@ const app = express();
 const server = http.createServer(app);
 
 // --- FIX: Socket.IO CORS Configuration ---
-// Bilkul server.js ki tarah, yahaan bhi apne allowed origins define karein
 const allowedOrigins = [
   "http://localhost:5173",
   "https://campuslink-frontend.onrender.com",
@@ -16,9 +15,10 @@ const io = new Server(server, {
   cors: {
     origin: allowedOrigins, // Hard-coded "localhost" ko allowed list se badal diya
     methods: ["GET", "POST"],
-    credentials: true, // Credentials ko allow karna zaroori hai
+    credentials: true,
   },
 });
+// --- END FIX ---
 
 // In-memory map of userId -> socketId
 const userSocketMap = {};
@@ -66,3 +66,4 @@ io.on("connection", (socket) => {
 });
 
 export { app, io, server };
+
