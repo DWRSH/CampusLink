@@ -13,9 +13,6 @@ import storyRouter from "./routes/story.routes.js";
 import messageRouter from "./routes/message.routes.js";
 import adminRouter from "./routes/admin.routes.js"; // ✅ NEW
 
-
-
-
 // Socket server
 import { app, server } from "./socket.js";
 
@@ -26,10 +23,33 @@ dotenv.config();
 const port = process.env.PORT || 8000;
 
 // Middlewares
-app.use(cors({
-    origin: "http://localhost:5173",  // You can update this to your frontend URL in production
-    credentials: true
-}));
+
+// --- YAHI HAI AAPKA FIX ---
+
+// 1. Apne dono allowed URLs ki ek list banayein
+const allowedOrigins = [
+  'http://localhost:5173', // Aapka local dev frontend
+  'https://campuslink-frontend.onrender.com', // Aapka naya deployed frontend
+];
+
+// 2. 'cors' ko batayein ki woh is list ko check kare
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Check karein ki jo request bhej raha hai (origin) woh allowed list mein hai ya nahi
+      // !origin ka matlab hai ki server-to-server requests (jaise Postman) ko bhi allow karega
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true); // Agar hai, toh allow karein
+      } else {
+        callback(new Error("Not allowed by CORS")); // Nahi hai, toh block karein
+      }
+    },
+    credentials: true,
+  })
+);
+
+// --- FIX KHATAM ---
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -42,10 +62,8 @@ app.use("/api/story", storyRouter);
 app.use("/api/message", messageRouter);
 app.use("/api/admin", adminRouter); // ✅ NEW - Admin route
 
-
-
 // Start server
 server.listen(port, () => {
-    connectDb();
-    console.log(`✅ Server started on port ${port}`);
+  connectDb();
+  console.log(`✅ Server started on port ${port}`);
 });
