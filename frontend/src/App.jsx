@@ -36,7 +36,7 @@ import { io } from "socket.io-client";
 import { setOnlineUsers } from "./redux/socketSlice";
 import { setNotificationData } from "./redux/userSlice";
 
-export const serverUrl = "http://localhost:8000";
+export const serverUrl = "https://campuslink-backend-rw6d.onrender.com";
 
 function App() {
   getCurrentUser();
