@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import SignUp from "./SignUp";
+// --- FIX 3: SignUp IMPORT PATH ---
+// Path ko aapsi galti se "./SignUp" ho gaya tha.
+// Ise baaki pages ki tarah "./pages/SignUp" kar diya hai.
+import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import ForgotPassword from "./pages/ForgotPassword";
 import Home from "./pages/Home";
@@ -36,9 +39,6 @@ import { setOnlineUsers } from "./redux/socketSlice";
 import { setNotificationData } from "./redux/userSlice";
 
 // --- FIX 1: DYNAMIC SERVER URL ---
-// This was hard-coded to localhost, which caused the CORS error in production.
-// This now checks if the app is in 'production' (like on Render)
-// and uses the deployed backend URL. Otherwise, it uses localhost.
 export const serverUrl =
   process.env.NODE_ENV === "production"
     ? "https://campuslink-backend-rw6d.onrender.com"
@@ -50,15 +50,10 @@ function App() {
   const dispatch = useDispatch();
 
   // --- FIX 2: DATA FETCHING IN USEEFFECT ---
-  // These hooks were being called on every single component render,
-  // which would flood your backend with requests and cause errors.
-
-  // This hook fetches the current user *once* when the app first loads.
   useEffect(() => {
     getCurrentUser();
-  }, []); // Empty dependency array means it runs only once on mount
+  }, []);
 
-  // This hook fetches all other app data *only after* the user data is available.
   useEffect(() => {
     if (userData) {
       getSuggestedUsers();
@@ -69,7 +64,7 @@ function App() {
       getPrevChatUsers();
       getAllNotifications();
     }
-  }, [userData]); // The dependency [userData] ensures this runs *only* when userData changes
+  }, [userData]);
   // --- END OF FIX 2 ---
 
   useEffect(() => {
@@ -149,7 +144,7 @@ function App() {
       <Route
         path="/messageArea"
         element={userData ? <MessageArea /> : <Navigate to={"/signin"} />}
-      CSS
+        // --- FIX 4: "CSS" LIKHA HUA THA, USE HATA DIYA ---
       />
       <Route
         path="/notifications"
@@ -172,7 +167,7 @@ function App() {
         element={
           userData && userData.isAdmin ? <AdminLoopPanel /> : <Navigate to="/" />
         }
-      CSS
+        // --- FIX 5: "CSS" LIKHA HUA THA, USE HATA DIYA ---
       />
       <Route
         path="/loops"
@@ -183,3 +178,4 @@ function App() {
 }
 
 export default App;
+
