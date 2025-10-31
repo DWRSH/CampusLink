@@ -35,8 +35,10 @@ export const signUp = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
-      secure: true, // --- FIX --- Production deploy (https) ke liye 'true' zaroori hai
-      sameSite: "None", // --- FIX --- Cross-site cookie ke liye 'None' zaroori hai
+      // --- FIX ---
+      secure: true, // Production (https) ke liye 'true'
+      sameSite: "None", // Cross-site cookie ke liye 'None'
+      // --- END FIX ---
     });
 
     return res.status(201).json(user);
@@ -65,8 +67,10 @@ export const signIn = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
-      secure: true, // --- FIX --- Production deploy (https) ke liye 'true' zaroori hai
-      sameSite: "None", // --- FIX --- Cross-site cookie ke liye 'None' zaroori hai
+      // --- FIX ---
+      secure: true, // Production (https) ke liye 'true'
+      sameSite: "None", // Cross-site cookie ke liye 'None'
+      // --- END FIX ---
     });
 
     return res.status(200).json(user);
@@ -147,3 +151,4 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json({ message: `reset otp error ${error}` });
   }
 };
+
