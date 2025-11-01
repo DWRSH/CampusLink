@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 // your backend admin api base
-const serverUrl = "http://localhost:8000/api/admin"; 
+const serverUrl = "https://campuslink-backend-rw6d.onrender.com/api/admin";
 // The like URL should probably also be defined outside if it's constant, 
 // but keeping it in handleLike for now as per your original code's structure.
 
